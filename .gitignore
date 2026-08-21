@@ -37,3 +37,6 @@ hf_cache/
 .idea/
 .vscode/
 *.swp
+
+# sinh bởi scripts/fill_report.py
+results/REPORT_BLOCKS.md
