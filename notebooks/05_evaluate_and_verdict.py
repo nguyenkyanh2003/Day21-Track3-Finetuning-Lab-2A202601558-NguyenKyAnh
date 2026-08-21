@@ -189,8 +189,13 @@ report.write_json(autopsy, "autopsy.json", results_dir=ROOT / "results")
 rows = []
 for i, (p, r) in enumerate(zip(preds_ft, target)):
     s_ft = ev.triage_field_accuracy(p, r["label"])
+    # `ft_pred` bị cắt 90 ký tự cho vừa bảng in ra màn hình. Nhưng artefact còn được
+    # đọc lại về sau (scripts/fill_report.py so từng trường để trả lời "các ca thua có
+    # mẫu chung nào không?"), và một chuỗi JSON bị cắt thì không parse được nữa — mọi
+    # dự đoán sẽ trông như lỗi định dạng. Giữ luôn bản đầy đủ.
     rows.append({"i": i, "ticket": r["input"][:70], "ft_score": round(s_ft, 2),
-                 "ft_pred": p.replace("\n", " ")[:90]})
+                 "ft_pred": p.replace("\n", " ")[:90],
+                 "ft_pred_full": " ".join(p.split())})
 rows.sort(key=lambda x: x["ft_score"])
 print("--- 3 ca TỆ NHẤT (bắt buộc đưa vào report) ---")
 print(report.markdown_table(rows[:3], ["i", "ticket", "ft_score", "ft_pred"]))

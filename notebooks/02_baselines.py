@@ -116,10 +116,8 @@ report.write_json(
     [{"i": i,
       "ticket": r["input"],
       "label": r["label"],
-      "pred_a": pa.replace("
-", " ").strip(),
-      "pred_b": pb.replace("
-", " ").strip(),
+      "pred_a": " ".join(pa.split()),
+      "pred_b": " ".join(pb.split()),
       "score_a": round(ev.triage_field_accuracy(pa, r["label"]), 2),
       "score_b": round(ev.triage_field_accuracy(pb, r["label"]), 2)}
      for i, (r, pa, pb) in enumerate(zip(target, preds_a, preds_b))],

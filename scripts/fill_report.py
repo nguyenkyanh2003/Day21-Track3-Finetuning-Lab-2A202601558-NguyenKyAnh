@@ -55,6 +55,33 @@ def gap(name: str) -> str:
     return f"> **Thiếu `results/{name}`** — chạy notebook sinh ra nó rồi chạy lại script này.\n"
 
 
+def wrong_fields(pred: str, label: dict) -> str:
+    """Những trường model đoán SAI — trả lời thẳng câu 'ca thua có mẫu chung không?'.
+
+    Dùng đúng bộ giải mã JSON của `labkit.evaluate`, nên 'sai' ở đây khớp với điểm
+    số trong `qualitative.json` thay vì là một phép so sánh thứ hai, lỏng hơn.
+    """
+    sys.path.insert(0, str(ROOT / "src"))
+    from labkit import evaluate as ev
+
+    obj = ev._parse_json_loose(pred)
+    if not isinstance(obj, dict):
+        return "(không parse được JSON)"
+    bad = []
+    for k in ev.TRIAGE_KEYS:
+        got, want = obj.get(k), label.get(k)
+        if want is None:
+            continue
+        if got is None:
+            bad.append(k)
+        elif k == "product":                       # so sau khi bỏ dấu, như scorer
+            if ev.normalize(str(got)) != ev.normalize(str(want)):
+                bad.append(k)
+        elif str(got).strip().lower() != str(want).strip().lower():
+            bad.append(k)
+    return ", ".join(bad) if bad else "—"
+
+
 def section_setup(out: list[str]) -> None:
     proof = load_json("mask_proof.json")
     stats = load_json("token_stats.json")
@@ -222,6 +249,9 @@ def section_qualitative(out: list[str]) -> None:
             continue
         merged.append({**r, "score_b": b["score_b"], "pred_b": b["pred_b"],
                        "label": b["label"], "full_ticket": b["ticket"],
+                       # NB5 cat ft_pred con 90 ky tu cho vua bang in ra man hinh;
+                       # ft_pred_full moi parse duoc. Van chay voi artefact cu.
+                       "pred_ft": r.get("ft_pred_full") or r["ft_pred"],
                        "delta": round(r["ft_score"] - b["score_b"], 2)})
     if not merged:
         out.append("> Không khớp được chỉ số — NB2 và NB5 chạy với `EVAL_LIMIT` khác nhau?\n")
@@ -246,15 +276,32 @@ def section_qualitative(out: list[str]) -> None:
             mark = "✅ FT thắng"
         else:
             mark = "hoà"
-        ticket = r["full_ticket"][:60].replace("|", "/")
-        label = json.dumps(r["label"], ensure_ascii=False)[:60]
-        pb = r["pred_b"][:50].replace("|", "/")
-        pf = r["ft_pred"][:50].replace("|", "/")
-        out.append(f"| {r['i']} | {ticket}… | `{label}` | {r['score_b']:.2f} · `{pb}` | "
-                   f"{r['ft_score']:.2f} · `{pf}` | {r['delta']:+.2f} | {mark} |\n")
+        ticket = r["full_ticket"][:64].replace("|", "/")
+        label = " · ".join(f"{k}={v}" for k, v in r["label"].items())
+        out.append(f"| {r['i']} | {ticket}… | {label.replace('|', '/')} | "
+                   f"{r['score_b']:.2f} — sai: {wrong_fields(r['pred_b'], r['label'])} | "
+                   f"{r['ft_score']:.2f} — sai: {wrong_fields(r['pred_ft'], r['label'])} | "
+                   f"{r['delta']:+.2f} | {mark} |\n")
     out.append(f"\n*Chọn tự động từ {len(merged)} mẫu: 2 ca Δ âm nhất, 2 ca Δ dương nhất, "
-               "1 ca hoà — không cherry-pick. Việc của bạn là nhìn cột dự đoán và trả lời: "
-               "các ca thua có mẫu chung nào không?*\n")
+               "1 ca hoà — không cherry-pick.*\n")
+
+    # "Các ca thua có mẫu chung nào không?" là câu report phải trả lời — đếm hộ.
+    tally: dict[str, int] = {}
+    n_lost = 0
+    for r in merged:
+        if r["delta"] >= 0:
+            continue
+        n_lost += 1
+        for f in wrong_fields(r["pred_ft"], r["label"]).split(", "):
+            if f and f != "(không parse được JSON)":
+                tally[f] = tally.get(f, 0) + 1
+    if n_lost:
+        ranked = ", ".join(f"`{k}` {v}/{n_lost}" for k, v in
+                           sorted(tally.items(), key=lambda kv: -kv[1]))
+        out.append(f"\n**Trường nào hỏng trong TẤT CẢ {n_lost} ca fine-tune thua:** {ranked}\n"
+                   "\n> Đây là dữ liệu cho câu \"có mẫu chung nào không?\" — nhìn trường đứng "
+                   "đầu rồi mở `data/train_seed.jsonl` xem trường đó có bao nhiêu ví dụ và "
+                   "phân bố nhãn ra sao.\n")
 
 
 def main() -> int:
