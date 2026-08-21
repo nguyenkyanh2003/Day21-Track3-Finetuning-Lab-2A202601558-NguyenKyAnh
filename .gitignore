@@ -14,13 +14,13 @@ __pycache__/
 # mot URL GitHub/HuggingFace "ben trong phai co results/ + submission/REPORT.md".
 # Repo goc bo qua results/ vi no gia dinh nop bang ZIP; o day ignore no dong nghia
 # voi nop mot repo rong.
-# adapters/correct/ duoc commit: muc 6.1 cua Codelabs khuyen nghi kem theo no
-# (adapter_model.safetensors + adapter_config.json, vai chuc MB -- GitHub nhan).
-# Ba adapter doi chung thi KHONG day len: nang, va grader khong can chung.
+# adapters/ KHONG len GitHub. Muc 6.1 khuyen nghi kem adapters/correct/, nhung
+# adapter_model.safetensors cua run nay nang 123,9 MB (32.464.896 tham so x 4 byte,
+# fp32) -- vuot tran 100 MB/file cua GitHub. Git LFS cung khong dung duoc: GitHub tu
+# choi upload LFS object len mot public fork ("can not upload new objects to public
+# fork"). Muc 6.2 cho phep dung cach nay: de adapter ngoai, ghi ro trong REPORT/LINKS.
 adapters/*/
 !adapters/.gitkeep
-!adapters/correct/
-!adapters/correct/**
 data/split/
 data/CUSTOM_DATASET.md
 !results/.gitkeep
