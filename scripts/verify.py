@@ -247,6 +247,16 @@ def full() -> None:
 
 
 def main() -> int:
+    # Windows consoles default to cp1252, which cannot encode the Vietnamese in these
+    # messages -- and the gatekeeper crashed with UnicodeEncodeError while printing the
+    # very check that tells you REPORT.md is still a template. A submission gate that
+    # dies on the failure it is reporting is worse than no gate.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):
+            pass
+
     ap = argparse.ArgumentParser()
     ap.add_argument("--smoke", action="store_true", help="imports + data + tests only")
     args = ap.parse_args()

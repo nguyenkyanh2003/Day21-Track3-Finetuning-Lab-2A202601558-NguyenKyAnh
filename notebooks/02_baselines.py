@@ -99,6 +99,34 @@ report.write_json(frozen, "baselines_frozen.json", results_dir=ROOT / "results")
 print(json.dumps(frozen, ensure_ascii=False, indent=2))
 
 # %% [markdown]
+# ### Lưu lại DỰ ĐOÁN của (a) và (b), không chỉ điểm số
+#
+# `baselines_frozen.json` chỉ giữ điểm tổng hợp. Nhưng mục 6 của `submission/REPORT.md`
+# — và tiêu chí 3.4 của rubric — đòi 5 ví dụ định tính **so sánh (b) với (c) trên cùng
+# một ticket**, trong đó ≥2 ca fine-tune THUA. NB5 lưu dự đoán của bản fine-tune vào
+# `qualitative.json`; nếu không lưu dự đoán của (b) ở đây thì cột "(b) prompt" của bảng
+# đó không có nguồn nào cả, và cách duy nhất để lấy lại là sinh toàn bộ tập eval thêm
+# một lượt (~17 phút trên T4).
+#
+# Chỉ số hàng (`i`) khớp với `qualitative.json` vì cả hai đánh số theo cùng
+# `eval_target.jsonl` sau khi áp cùng `EVAL_LIMIT`.
+
+# %%
+report.write_json(
+    [{"i": i,
+      "ticket": r["input"],
+      "label": r["label"],
+      "pred_a": pa.replace("
+", " ").strip(),
+      "pred_b": pb.replace("
+", " ").strip(),
+      "score_a": round(ev.triage_field_accuracy(pa, r["label"]), 2),
+      "score_b": round(ev.triage_field_accuracy(pb, r["label"]), 2)}
+     for i, (r, pa, pb) in enumerate(zip(target, preds_a, preds_b))],
+    "baseline_preds.json", results_dir=ROOT / "results")
+print(f"đã lưu results/baseline_preds.json — {len(target)} dòng, dùng cho REPORT §6")
+
+# %% [markdown]
 # ### Đọc kết quả trước khi đi tiếp
 #
 # * **(b) đã cao sẵn?** Tốt — bài toán của bạn có thể *không cần* fine-tune. Đó là một

@@ -1,0 +1,8 @@
+# Integrity: scripts/verify.py SHA-256s the corpus files byte-for-byte and compares
+# them to data/checksums.json. Git's autocrlf on Windows rewrites LF -> CRLF at
+# checkout, which changes those bytes and makes the gatekeeper report
+#     "eval sets unmodified: FAIL ... Editing the eval set after seeing results
+#      invalidates the comparison"
+# on a clone nobody has touched. Mark the checksummed data as binary so no platform
+# rewrites it. The checksums in data/checksums.json are the LF ones.
+data/*.jsonl -text
