@@ -396,7 +396,11 @@ quy, và cấu hình LoRA của cả bốn run. `colab/*.ipynb` được sinh l�
       `response-only` sinh ra mask **giống hệt nhau**; `valid_trace_rate=0,00` xác nhận
       không có trace nào để bảo vệ. Muốn làm B3 phải làm B2 trước.
 - [ ] B4 quét rank có kiểm soát — chưa chạy; nêu ở §7 như việc tiếp theo
-- [ ] B5 HuggingFace Hub — chưa đẩy
+- [x] **B5 HuggingFace Hub (+2)** — https://huggingface.co/kyanhhh/lab21-2A202601558-qwen35-triage-vi
+      Repo public, chứa adapter, **toàn bộ `results/`**, `submission/REPORT.md` và
+      `REFLECTION.md`. Mục 6.2 nói rõ *"chỉ có adapter thì không chấm được"*, nên tôi
+      đẩy cả ba. Model card ghi thẳng rằng đây là artefact của một thí nghiệm có phán
+      quyết **âm**, kèm bảng ba baseline và khuyến cáo dùng prompt thay vì adapter này.
 
 **Ghi chú về `adapters/correct/` — vì sao nó KHÔNG có trong repo này.**
 `adapter_model.safetensors` nặng **123,9 MB**: 32.464.896 tham số × **4 byte**. Bốn byte
@@ -409,9 +413,9 @@ fork** — `can not upload new objects to public fork`. LFS object của fork ph
 kho LFS của repo gốc, mà tôi không có quyền ghi vào đó.
 
 Mục 6.2 cho phép đúng lối thoát này: *"hoặc đẩy adapter sang HuggingFace rồi chỉ để link
-trong REPORT.md / LINKS.md"*. Mục 6.1 cũng xếp adapter vào loại **nên có**, không bắt buộc
+trong REPORT.md / LINKS.md"* — và tôi đã làm: **https://huggingface.co/kyanhhh/lab21-2A202601558-qwen35-triage-vi**. Mục 6.1 cũng xếp adapter vào loại **nên có**, không bắt buộc
 — bắt buộc là `results/` và `submission/REPORT.md`, cả hai đều đầy đủ trong repo này.
 
-Adapter vẫn còn nguyên trên máy tại `adapters/correct/` và tái lập được bằng
-`EPOCHS=1 python notebooks/03_train_correct.py` với đúng seed 42 và `max_steps=15` ghi
+Nên adapter **vẫn kiểm chứng được**, chỉ là ở địa chỉ khác. Nó cũng tái lập được từ đầu
+bằng `EPOCHS=1 python notebooks/03_train_correct.py` với seed 42 và `max_steps=15` ghi
 trong `results/runs.csv`.

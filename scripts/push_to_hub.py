@@ -92,13 +92,13 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 base = AutoModelForCausalLM.from_pretrained("unsloth/Qwen3.5-4B", dtype="float16",
                                             device_map="auto")
-model = PeftModel.from_pretrained(base, "%s")
-tok = AutoTokenizer.from_pretrained("%s")
+model = PeftModel.from_pretrained(base, "__REPO__")
+tok = AutoTokenizer.from_pretrained("__REPO__")
 ```
 
 Nếu bạn thật sự cần phân loại triage tiếng Việt: **dùng base model với prompt liệt kê từ
 vựng** thay vì adapter này. Nó chính xác hơn 0.230 điểm và nhanh hơn 1,49×.
-""" % (REPO_ID, REPO_ID)
+""".replace("__REPO__", REPO_ID)
 
 
 def main() -> int:

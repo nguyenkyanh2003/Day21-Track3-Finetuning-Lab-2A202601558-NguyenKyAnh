@@ -56,11 +56,18 @@ EPOCHS=1 COMPUTE_TIER=T4 python notebooks/03_train_correct.py
 
 với seed 42 và `max_steps=15` như ghi trong `results/runs.csv`.
 
-## HuggingFace Hub
+## HuggingFace Hub — đã đẩy (bonus B5, +2)
 
-Chưa đẩy. Nếu đẩy: `nguyenkyanh2003/lab21-2A202601558-qwen35-triage-vi`
-(base `unsloth/Qwen3.5-4B`, tier `T4`, fp16) — vừa giải được chuyện 123,9 MB ở trên, vừa
-tính thưởng **B5 (+2)**.
+```
+https://huggingface.co/kyanhhh/lab21-2A202601558-qwen35-triage-vi
+```
+
+Repo **public**, chứa: `adapter_model.safetensors` (123,9 MB) + `adapter_config.json`,
+**toàn bộ `results/`**, `submission/REPORT.md`, `submission/REFLECTION.md`, và một model
+card ghi rõ base model cùng phán quyết FAILED.
+
+Đẩy bằng `python scripts/push_to_hub.py`. Đây cũng là nơi lấy `adapters/correct/`
+mà GitHub không nhận.
 
 ## Kết quả tóm tắt
 
