@@ -14,8 +14,13 @@ __pycache__/
 # mot URL GitHub/HuggingFace "ben trong phai co results/ + submission/REPORT.md".
 # Repo goc bo qua results/ vi no gia dinh nop bang ZIP; o day ignore no dong nghia
 # voi nop mot repo rong.
+# adapters/correct/ duoc commit: muc 6.1 cua Codelabs khuyen nghi kem theo no
+# (adapter_model.safetensors + adapter_config.json, vai chuc MB -- GitHub nhan).
+# Ba adapter doi chung thi KHONG day len: nang, va grader khong can chung.
 adapters/*/
 !adapters/.gitkeep
+!adapters/correct/
+!adapters/correct/**
 data/split/
 data/CUSTOM_DATASET.md
 !results/.gitkeep
